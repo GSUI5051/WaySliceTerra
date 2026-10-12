@@ -1,0 +1,252 @@
+/* ==========================================================================
+   Design tokens — Light and Dark are two complete themes, not an inversion.
+   Every component reads these variables; no component hard-codes colors.
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces */
+  --background: #f2f4f6;
+  --surface: #fafbfd;
+  --surface-elevated: #ffffff;
+  --surface-muted: #e9ecef;
+  --surface-hover: #f1f3f5;
+
+  /* 3D sky (js/map/mapView.js) — the horizon resolves into the data-area
+     surface so the pitched map and the app read as one surface. Dark stays
+     deep and neutral; light is a deliberately desaturated blue whose blue
+     lives at the zenith and fades out toward the horizon — visibly a sky,
+     never a weather or game sky. */
+  --map-sky: #9ccaf0;
+  --map-sky-horizon: #fafbfd;
+
+  /* Text */
+  --foreground: #1b2027;
+  --foreground-muted: #5b6570;
+  /* Faint carries real 10.5–12px text (group labels, notes, hints): 4.86:1 on
+     surface, 4.56 on background, 5.03 on elevated sheets — all above AA. */
+  --foreground-faint: #67707a;
+
+  /* Lines */
+  --border: #e1e5ea;
+  --border-strong: #c8ced6;
+
+  /* Signals */
+  --primary: #1b2027;            /* primary buttons: ink on light */
+  --primary-foreground: #ffffff;
+  --accent: #e8590c;
+  /* Pressed chips and the badge render accent-strong as 11–12px text on
+     accent-soft: 4.66:1 there, 5.25:1 on surface — the former default
+     (#d9480f) sat just under the 4.5:1 AA floor on the soft blend. */
+  --accent-strong: #bf3c0c;
+  --accent-soft: rgba(232, 89, 12, 0.10);
+  --focus: #1971c2;
+  --success: #2f9e44;
+  --danger: #e03131;
+  --backdrop: rgba(15, 20, 26, 0.42);
+
+  /* The support link keeps the Ko-fi pink as its brand color; the light
+     theme's value is deepened just enough that the 13px label clears AA on
+     .btn's surface (4.93:1) and its hover fill (4.59:1). */
+  --support-pink: #c92a7d;
+
+  /* Chart series colors as 11-12px text (tooltip values, the mobile readout
+     band, the canvas legend strip, segment stats): the theme-independent
+     graphics tokens miss 4.5:1 as small text, so text reads these per-theme
+     siblings instead — ≥4.5:1 on surface and the elevated tooltip sheet
+     (worst case quoted). */
+  --series-hr-text: #dc2626;      /* 4.66:1 */
+  --series-speed-text: #2563eb;   /* 4.99:1 */
+  --series-cadence-text: #0c7a55; /* 5.16:1 */
+  --series-temp-text: #a16207;    /* 4.75:1 */
+  --series-power-text: #9333ea;   /* 5.20:1 */
+
+  /* Charts */
+  /* The elevation curve is the chart's primary non-text graphic: the old
+     #94a0ad measured 2.57:1 on surface, under WCAG 1.4.11's 3:1 floor.
+     The deepened slate reads 3.49:1 on surface, 3.62:1 on the elevated
+     tooltip sheet. */
+  --profile-line: #7c8894;
+  /* The elevation-profile telemetry curves' AND grid lines' opacity OUTSIDE
+     the selected sector (inside it they draw at full strength; applied per
+     stroke in the uPlot draw, so axes/ticks/labels are untouched). Per-theme
+     values measured from the user's reference screenshots (light 0.25,
+     dark 0.15 effective). */
+  --profile-series-dim: 0.25;
+
+  /* Dual-variable density ramp — low → high density, one ramp per theme.
+     Zero density is forced fully transparent by the renderer; these two
+     stops interpolate through every strength between. */
+  --density-zero: rgba(232, 89, 12, 0.06);
+  --density-max: #d9480f;
+
+  /* Heart-rate zone bars — Amazfit Zepp palette, light-theme set */
+  --hr-zone-1: #8e60f4;
+  --hr-zone-2: #479bd5;
+  --hr-zone-3: #50ad8e;
+  --hr-zone-4: #f1ae3c;
+  --hr-zone-5: #eb6357;
+
+  /* Shape & depth */
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
+  --shadow-1: 0 1px 2px rgba(16, 24, 32, 0.05), 0 2px 10px rgba(16, 24, 32, 0.08);
+  --shadow-2: 0 4px 18px rgba(16, 24, 32, 0.14);
+
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0f1216;
+  --surface: #161a20;
+  --surface-elevated: #1d232b;
+  --surface-muted: #10141a;
+  --surface-hover: #222933;
+
+  /* 3D sky (js/map/mapView.js) — see the light-theme block. The horizon
+     value is the spec constant for the dark data-area background. */
+  --map-sky: #0d1014;
+  --map-sky-horizon: #171a1f;
+
+  --foreground: #e7eaee;
+  --foreground-muted: #9aa4b0;
+  /* Same AA floor as the light theme: 5.04:1 on surface, 4.57 on the
+     elevated sheets the drawer and sheets render their small text on. */
+  --foreground-faint: #818b95;
+
+  --border: #272e38;
+  --border-strong: #3b4450;
+
+  --primary: #e7eaee;
+  --primary-foreground: #12161b;
+  --accent: #ff8a3d;
+  --accent-strong: #ffa05e;
+  --accent-soft: rgba(255, 138, 61, 0.14);
+  --focus: #4dabf7;
+  --success: #51cf66;
+  --danger: #ff6b6b;
+  --backdrop: rgba(0, 0, 0, 0.55);
+
+  /* Brand pink clears dark surfaces as-is (5.10:1 on .btn's surface). */
+  --support-pink: #e94bb4;
+
+  /* Chart series colors as 11-12px text (tooltip values, the mobile readout
+     band, the canvas legend strip, segment stats): the theme-independent
+     graphics tokens miss 4.5:1 as small text, so text reads these per-theme
+     siblings instead — ≥4.5:1 on surface and the elevated tooltip sheet
+     (worst case vs elevated quoted). */
+  --series-hr-text: #f87171;      /* 5.72:1 */
+  --series-speed-text: #60a5fa;   /* 6.22:1 */
+  --series-cadence-text: #10b981; /* 6.24:1 — the pre-rework graphics value */
+  --series-temp-text: #f59e0b;    /* 7.37:1 — the pre-rework graphics value */
+  --series-power-text: #c084fc;   /* 5.99:1 */
+
+  /* Lightened from #4d5763 (2.38:1) to clear the same 3:1 floor: 3.17:1
+     on the chart surface, the only background the curve renders on. */
+  --profile-line: #5f6a76;
+  /* Measured from the dark reference screenshot — much lower than the light
+     theme's dim for the same de-emphasis read on the dark plot. */
+  --profile-series-dim: 0.15;
+
+  /* Dual-variable density ramp — the dark theme's brighter accent reads as
+     a glow on the dark plot, mirroring the light theme's deep ramp. */
+  --density-zero: rgba(255, 138, 61, 0.07);
+  --density-max: #ffa05e;
+
+  /* Heart-rate zone bars — Amazfit Zepp palette, dark-theme set */
+  --hr-zone-1: #7f55db;
+  --hr-zone-2: #3f8cbf;
+  --hr-zone-3: #489b7c;
+  --hr-zone-4: #f1ae3c;
+  --hr-zone-5: #cb473c;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 10px rgba(0, 0, 0, 0.30);
+  --shadow-2: 0 6px 22px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   Shared structural tokens — theme-independent, declared once.
+   Map sector/handle colors reference the semantic signal tokens, so the map,
+   the profile and the metrics panel can never drift apart per theme.
+   ========================================================================== */
+
+:root {
+  /* Chart series colors — fixed per spec, identical in both themes.
+     Temperature (amber) and power (purple) stay clear of the hr red,
+     speed blue and cadence green hue families. Light cadence/temp were
+     deepened for the same 3:1 non-text floor (#10b981 2.45:1 and
+     #f59e0b 2.07:1 on surface → #0e8f66 3.95:1, #c47d08 3.23:1); being
+     theme-independent, the dark readings move with them (4.27:1 and
+     5.22:1, both previously passing and still clear of the floor).
+     Small TEXT renders the per-theme --series-*-text siblings instead
+     (see the theme blocks). */
+  --series-hr: #ef4444;
+  --series-speed: #3b82f6;
+  --series-cadence: #0e8f66;
+  --series-temp: #c47d08;
+  --series-power: #a855f7;
+
+  /* The white facet of the sector handles (profile bar core, map grip dot) —
+     a cartographic constant over the colored handle, identical in both
+     themes like --map-handle-border. */
+  --handle-core: rgba(255, 255, 255, 0.95);
+
+  /* Map layers */
+  --map-track-casing: #ffffff;
+  --map-track: #3d76f0;
+  --map-sector: var(--accent);
+  --map-handle-start: var(--success);
+  --map-handle-end: var(--danger);
+  --map-handle-border: #ffffff;
+  --map-waypoint: #8b5cf6;
+
+  /* 3D terrain (js/map/terrain.js): hillshade shading + TrailSplits vector
+     contour lines and their unit-aware elevation labels. Basemap-driven, not
+     theme-driven (see the imagery pair below): every basemap in the catalog
+     looks the same in both themes, so one palette per basemap class serves
+     both. The default pair targets the PALE maps (OSM raster, OpenFreeMap
+     Bright/Positron): a deep warm brown, near-opaque — the earlier washed
+     0.45-alpha brown all but vanished on Positron's gray ground and read as
+     just another gray among OpenFreeMap Bright's dashed trails. */
+  --map-hillshade-shadow: rgba(46, 40, 30, 0.5);
+  --map-hillshade-highlight: rgba(255, 255, 255, 0.55);
+  --map-hillshade-accent: rgba(46, 40, 30, 0.18);
+  --map-contour: rgba(94, 62, 40, 0.8);
+  --map-contour-strong: rgba(70, 46, 28, 0.95);
+
+  /* Contours over imagery basemaps (js/map/terrain.js contourTokens): the
+     two satellite rasters (EOX Sentinel-2, Esri World Imagery) and OpenFreeMap
+     Dark. On them the translucent theme browns above sink into the texture or
+     the near-black background, so the layers switch to a near-opaque vivid
+     yellow — a hue the imagery never carries at this saturation, equally
+     separable over green vegetation, gray urban fabric and the dark vector
+     ground. Basemap-driven, not theme-driven: the imagery looks the same in
+     both themes, so one palette serves both (shared :root, like the other
+     basemap-facing tokens). */
+  --map-contour-imagery: rgba(255, 214, 10, 0.9);
+  --map-contour-imagery-strong: rgba(255, 214, 10, 0.95);
+
+  /* Named stacking levels, lowest → highest */
+  --z-profile-handle: 5;
+  /* Above Leaflet's internal panes (tiles 200 … controls 800): the probe
+     readout overflows #profile-body upward and overlays the map's bottom
+     strip, so it must beat the map's own layers. Below --z-overlay. */
+  --z-profile-tooltip: 850;
+  --z-map-controls: 800;
+  --z-overlay: 900;
+  --z-header: 1500;
+  --z-backdrop: 1900;
+  --z-menu: 2000;
+  --z-drop: 3000;
+
+  /* Motion — named easings only; the browser-default `ease` is not used */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-normal: 240ms;
+}

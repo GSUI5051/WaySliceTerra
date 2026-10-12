@@ -1,0 +1,33 @@
+# WaySlice Terra ignore rules
+# Order: dot-prefixed folders -> specs -> devlog -> dev scripts -> screenshot sources
+# -> prompt reference -> sample tracks -> dependencies
+
+# -- 1. Dot-prefixed folders (local tooling artifacts, not committed) --
+# Currently matches: .playwright-mcp/ (browser test artifacts), .workbuddy/, etc.
+# This rule does not affect the .gitignore file itself (it is not a folder).
+# To commit a dot folder in the future (e.g. .github/), add an explicit
+# un-ignore line after this rule, e.g.:
+# !.github/
+.*/
+
+# -- 2. Specs and task notes --
+/specs/
+
+# -- 3. Dev log --
+/devlog/
+
+# -- 4. Dev and build scripts --
+/tools/
+.zcodeignore
+
+# -- 5. Screenshot source files --
+/screenshots/png/
+
+# -- 6. Prompt reference material --
+/prompt/
+
+# -- 7. Sample tracks --
+/sample/
+
+# -- 8. Dependencies --
+/node_modules/

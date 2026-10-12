@@ -1,0 +1,194 @@
+/* ==========================================================================
+   Settings drawer — the full-height settings <dialog> and the accordion
+   groups (.drawer-acc) its body is built from, plus the terrain slider and
+   section note that only Terra's drawer carries.
+   ========================================================================== */
+
+/* The settings surface (theme / language / units / terrain) on every
+   viewport: a <dialog> pinned to the inline end and stretched full height.
+   The panel parks off-canvas via transform; [open] plus @starting-style
+   slides it in, and `allow-discrete` on display/overlay keeps it in the
+   top layer while the slide-out runs (without support it just toggles).
+   Logical inset pins it right in LTR, left in RTL; the slide direction
+   itself stays physical until an RTL language ships. */
+.drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline: auto 0;
+  /* The dialog UA sheet sets height: fit-content, which would let the panel
+     grow past the viewport (top/bottom insets alone don't stretch it) —
+     height: auto restores the inset-driven full-height stretch. */
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  width: min(320px, calc(100vw - 56px));
+  max-width: none;
+  max-height: none;
+  border: none;
+  border-inline-start: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface-elevated);
+  color: var(--foreground);
+  box-shadow: var(--shadow-2);
+  transform: translateX(calc(100% + 24px));
+  transition: transform var(--dur-normal) var(--ease-out),
+    overlay var(--dur-normal) allow-discrete,
+    display var(--dur-normal) allow-discrete;
+}
+
+.drawer[open] { transform: none; }
+
+@starting-style { .drawer[open] { transform: translateX(calc(100% + 24px)); } }
+
+.drawer::backdrop { background: var(--backdrop); }
+
+.drawer-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 12px 10px;
+  padding-inline: 16px 12px;
+  border-block-end: 1px solid var(--border);
+}
+
+.drawer-head h2 { font-size: 15px; }
+.drawer-head .btn { margin-inline-start: auto; }
+
+.drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+}
+
+.drawer-section { margin-block-start: 16px; }
+.drawer-section:first-child { margin-block-start: 6px; }
+
+.drawer-section-title {
+  font-size: 13.5px;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  color: var(--foreground);
+  margin-block-end: 2px;
+}
+
+/* Accordion groups — each section title sits on a full-width trigger row
+   (same geometry as the .menu-item rows below it: 36px min-height, radius,
+   shared hover/focus background) with a chevron pinned to the row's end.
+   The chevron is Lucide's chevron-down while collapsed and chevron-up while
+   expanded; both render up front and [data-open] picks the visible one. */
+.drawer-acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  border-radius: var(--radius-s);
+  text-align: start;
+}
+
+.drawer-acc-trigger:hover,
+.drawer-acc-trigger:focus-visible { background: var(--surface-hover); }
+
+/* The title keeps its standalone-title spacing only outside the trigger;
+   inside the flex row the row's own padding sets the rhythm. It may also
+   shrink and wrap: the longest pack translations (29-char Spanish) must
+   never push the chevron out of the row. */
+.drawer-acc-trigger .drawer-section-title {
+  margin-block-end: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.drawer-acc-chev {
+  margin-inline-start: auto;
+  display: inline-flex;
+  color: var(--foreground-faint);
+}
+
+.drawer-acc-chev .icon { width: 15px; height: 15px; }
+/* Both wrapper spans need display:inline-flex. Without it the visible span
+   is a plain inline block: its 15px svg sits on the text baseline and the
+   line box grows by the strut's descender (the button inherits h3's UA
+   1.17em → 16.38px font), making the chevron item 23.75px — past the row's
+   22px content box, so collapsed rows render 37.75px instead of 36px and
+   sit the title 0.875px lower than expanded rows, whose chevron-up wrapper
+   already gets inline-flex below. [data-open] still hides either one. */
+.drawer-acc-chev-down { display: inline-flex; }
+.drawer-acc-chev-up { display: none; }
+.drawer-acc[data-open] .drawer-acc-chev-down { display: none; }
+.drawer-acc[data-open] .drawer-acc-chev-up { display: inline-flex; }
+
+/* The collapsible body: grid-template-rows 0fr → 1fr animates to the
+   content's real height without measuring it, so re-rendered sections and
+   language switches need no JS sizing. `visibility` transitions discretely
+   — it flips to hidden only after the collapse finishes (keeping rows out
+   of the Tab order while closed) and back immediately on expand. The base
+   reduced-motion rule in base.css collapses both durations. */
+.drawer-acc-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-normal) var(--ease-out);
+}
+
+.drawer-acc[data-open] > .drawer-acc-body { grid-template-rows: 1fr; }
+
+.drawer-acc-inner {
+  min-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility var(--dur-normal);
+}
+
+.drawer-acc[data-open] > .drawer-acc-body > .drawer-acc-inner { visibility: visible; }
+
+/* Terrain exaggeration slider (drawer Terrain section): the row shares the
+   .menu-item anatomy's padding and type so it reads as a sibling of the
+   toggle rows; the range input follows the accent like every other checked
+   control. The label takes its own line (the Romance-language names squeezed
+   a one-row slider into a sliver), and the range runs the full row width
+   under it. The value stays fixed-width so the row doesn't wiggle while
+   dragging. */
+.drawer-slider {
+  padding: 7px 10px;
+}
+
+.drawer-slider .menu-item-label {
+  display: block;
+  padding-block-end: 6px;
+}
+
+.drawer-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+}
+
+.drawer-slider input[type="range"] {
+  /* basis 0, not auto: the intrinsic range width must not join the
+     distribution — the track fills the row up to the value readout exactly */
+  flex: 1 1 0;
+  accent-color: var(--accent);
+}
+
+.drawer-slider-value {
+  flex: none;
+  min-width: 3.4ch;
+  text-align: end;
+  font-size: 12px;
+  color: var(--foreground-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A one-line explainer under a section's rows (e.g. "terrain settings apply
+   in 3D view"): quieter than a .menu-item-hint, own line. */
+.drawer-section-note {
+  padding: 2px 10px 0;
+  font-size: 11.5px;
+  color: var(--foreground-faint);
+}

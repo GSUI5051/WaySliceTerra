@@ -1,0 +1,44 @@
+/* ==========================================================================
+   Hint popovers — the circled-? trigger button and its floating text
+   bubble (same surface as .menu-panel).
+   ========================================================================== */
+
+/* The circled question mark trailing the label on hint rows ("Climb (?)");
+   its click area extends well past the glyph (the JS hit radius adds 30 px
+   around the icon circle). Pulls the flex gap down to a snug label gap. */
+.metric-hint-btn {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  margin-inline-start: -7px;
+  border: none;
+  background: transparent;
+  color: var(--foreground-faint);
+  cursor: pointer;
+  border-radius: var(--radius-s);
+}
+
+.metric-hint-btn:hover { color: var(--foreground-muted); background: var(--surface-hover); }
+
+.metric-hint-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.metric-hint-btn .icon { width: 13px; height: 13px; display: block; }
+
+/* Same floating surface as .menu-panel: elevated background, hairline
+   border, menu radius and shadow — just text inside. */
+.hint-popover {
+  position: fixed;
+  z-index: var(--z-menu);
+  max-width: min(300px, calc(100vw - 16px));
+  padding: 8px 10px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-2);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--foreground-muted);
+}

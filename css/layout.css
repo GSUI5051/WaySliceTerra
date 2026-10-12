@@ -1,0 +1,800 @@
+/* ==========================================================================
+   Layout — header + workspace grid (map / metrics / profile).
+   Desktop ≥1100px: map + right metrics rail + full-width profile.
+   Below: one long scrolling page (map → elevation → sector metrics) for
+   tablet/mobile, with the header pinned on top.
+   ========================================================================== */
+
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header ------------------------------------------------------------------ */
+
+#app-header {
+  height: 52px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: var(--surface);
+  border-block-end: 1px solid var(--border);
+  z-index: var(--z-header);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  /* Nothing in the header's measured line may shrink: the compression
+     controller (js/ui/headerFit.js) reads overflow from real geometry, so
+     width pressure must overflow, not squash content. */
+  flex: none;
+  /* Explicit outer height, one family with the whole 32px header row
+     (css/buttons.css) — pinned, not inherited from the logo tile's box, so
+     the brand block measures 32px at every display scale like everything
+     else in the line. */
+  height: 32px;
+}
+
+/* The name's line box is pinned to the family's 32px height (half-leading
+   centers the 15px text exactly where flex centering put it) — an explicit
+   box instead of a content-driven one. */
+.brand-name { font-size: inherit; font-weight: inherit; line-height: 32px; }
+
+.brand-icon { display: inline-flex; }
+/* One family with the whole header row: the logo tile, the chip's compact
+   info square, the route-source notice and every .btn share the 32px outer
+   height (css/buttons.css). 32 is a multiple of 4 — the painted height is
+   an integer number of device pixels at the 100/125/150/200% display
+   scales, so no control sheds half a pixel of edge ink at 125%. */
+.brand-icon img { width: 32px; height: 32px; display: block; }
+
+.file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+  /* Explicit outer height, one family with the whole 32px header row
+     (css/buttons.css) — full mode included. Chromium snaps 1px borders to
+     whole device pixels on fractional display scales, and a
+     content+padding+border sum would shed that snap into the outer box; a
+     pinned border-box stays 32px at every scale, the snap landing
+     invisibly in the text's content box. Width stays shrinkable in full
+     mode: that shrink is what the measured full-vs-info flip reads. */
+  height: 32px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface-muted);
+  font-size: 12px;
+  color: var(--foreground-muted);
+}
+
+.file-chip #file-name {
+  color: var(--foreground);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.file-chip #file-meta { white-space: nowrap; }
+
+/* The chip has exactly two modes — the full line, or a lone info button —
+   and WHICH one applies is measured in js/ui/fileChip.js (scrollWidth vs
+   the space the flexbox actually left the chip), never hard-coded here: no
+   width constant in this file may drift from future header buttons. */
+.file-chip .file-chip-info {
+  display: none;
+  flex: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground-muted);
+  cursor: pointer;
+  border-radius: var(--radius-s);
+}
+
+.file-chip .file-chip-info:hover { color: var(--foreground); }
+
+.file-chip.is-compact {
+  /* Explicit outer square, one family with .route-note and the .btn row
+     (css/buttons.css); the 32px height comes from the base .file-chip
+     rule. Once degraded to the lone (i) button it may not be squeezed by
+     the flexbox — width pressure overflows into the compression levels
+     instead. Full mode stays shrinkable: that shrink is what the measured
+     full-vs-info flip reads. */
+  width: 32px;
+  padding: 5px;
+  overflow: visible;
+  flex: none;
+}
+.file-chip.is-compact #file-name,
+.file-chip.is-compact #file-meta { display: none; }
+.file-chip.is-compact .file-chip-info { display: inline-flex; }
+
+/* Coarse-pointer hit-area extension: the 20px info button gains 12px of
+   transparent margin to 44px, visually unchanged; its surroundings are the
+   chip's own padding and clear header space, so the extension covers no
+   neighboring control. Compact mode must yield the chip's base
+   overflow:hidden (which clips the full-mode name) or it would clip this
+   ::after too. */
+@media (hover: none) and (pointer: coarse) {
+  .file-chip .file-chip-info { position: relative; }
+  .file-chip .file-chip-info::after { content: ""; position: absolute; inset: -12px; }
+}
+
+/* The compact popover reuses .hint-popover's base look (css/popovers.css);
+   the three facts sit on their own lines, the name emphasized. */
+.file-chip-popover .file-chip-pop-row { overflow-wrap: anywhere; }
+.file-chip-popover .file-chip-pop-row.is-name {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.file-chip-popover .file-chip-pop-row + .file-chip-pop-row { margin-block-start: 2px; }
+
+/* The route warning folded into the popover at the emergency level: the
+   triangle wears the same alarm red as the marker square it replaces
+   (--series-hr, identical in both themes), at the marker's own ink size. */
+.file-chip-popover .file-chip-pop-alert { color: var(--series-hr); }
+.file-chip-popover .file-chip-pop-alert .icon { width: 16px; height: 16px; }
+
+/* The route-source notice — a lone warning square shown only for degraded
+   route GPX files (js/ui/routeNote.js), shaped after the chip's compact
+   info button so the pair reads as one family. The triangle wears the
+   heart-rate curve red (--series-hr, identical in both themes — the chart's
+   alarm color); hover deepens it to the same family's per-theme text
+   variant. */
+.route-note {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  /* Explicit outer square, same reason as the compact chip above: a pinned
+     border-box stays 32px under Chromium's device-pixel border snapping
+     where the padding+content+border sum would read 31.6px at 125%. */
+  width: 32px;
+  height: 32px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  background: var(--surface-muted);
+  color: var(--series-hr);
+  cursor: pointer;
+}
+
+.route-note .btn-icon-slot {
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+}
+
+.route-note:hover { color: var(--series-hr-text); }
+
+/* Coarse-pointer hit-area extension: the 32px square's 30px padding box
+   gains 7px of transparent margin per side to 44px, visually unchanged;
+   the marker sits in clear header space, so the extension covers no
+   neighboring control. */
+@media (hover: none) and (pointer: coarse) {
+  .route-note { position: relative; }
+  .route-note::after { content: ""; position: absolute; inset: -7px; }
+}
+
+.header-actions {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Same no-shrink contract as .brand: the compression controller measures
+     this row's right edge against the header's content box, which stays
+     honest only while the row overflows instead of compressing. The file
+     chip is the one shrinkable item and re-decides its own mode inside the
+     controller's walk. */
+  flex: none;
+}
+
+/* One height for every header action: the primary buttons define it (`.btn`'s
+   34px) and the icon-only settings trigger follows it. Stated here so a control
+   added to this row later cannot drift off it — this outranks `.btn-small`. */
+.header-actions > .btn { height: 34px; flex: none; }
+
+/* The GitHub link wears the settings trigger's box but not its width — a 4.4:1
+   lockup cannot live in a 34 px square, so the bare-mark state takes the square
+   and the lockup state sizes to its logo. Both marks render ~13.5 px tall,
+   which is the ink height of the header's other 16 px icons. */
+#btn-github { padding-inline: 10px; text-decoration: none; }
+
+#btn-github.is-loaded { width: 34px; padding: 0; justify-content: center; }
+
+#btn-github .gh-logo { display: none; height: 13.5px; width: auto; }
+
+/* Support (Ko-fi) link — heart + label in the Ko-fi pink, wearing the same
+   forms as the GitHub link: full heart+label while the header is bare, a 34 px
+   icon-only square once a track is loaded (see also the phone block below). */
+#btn-support { color: var(--support-pink); padding-inline: 10px; text-decoration: none; }
+
+#btn-support.is-loaded { width: 34px; padding: 0; justify-content: center; }
+
+#btn-support.is-loaded span:not(.btn-icon-slot) { display: none; }
+
+/* Exactly one file is ever visible: lockup before a track is loaded, bare mark
+   after, in the theme's own black or white variant. */
+html[data-theme="light"] #btn-github:not(.is-loaded) .gh-lockup.gh-light,
+html[data-theme="dark"] #btn-github:not(.is-loaded) .gh-lockup.gh-dark,
+html[data-theme="light"] #btn-github.is-loaded .gh-mark.gh-light,
+html[data-theme="dark"] #btn-github.is-loaded .gh-mark.gh-dark { display: block; }
+
+/* The .gh-label exists for the compression panels only — the row's link is
+   identified by its logo (or its aria-label), the panel's row needs the
+   word. */
+#btn-github .gh-label { display: none; }
+
+/* Header compression — six measured levels, the top bar's counterpart of
+   the profile toolbar's controller (js/ui/headerFit.js, cf.
+   refreshControlsFit). Cumulative classes on #app-header:
+
+     full → is-brandless → is-icons → is-compact → is-overflow → is-minimum
+          → is-emergency
+
+   is-brandless drops the app name for the logo mark alone; is-icons drops
+   the Export / Auto slice / Import track labels for their glyphs and
+   squares the GitHub + Support links — every control stays in the row, one
+   click deep; is-compact folds the links into one ellipsis trigger,
+   is-overflow additionally folds the three actions into a second,
+   primary-chrome trigger, and is-minimum folds everything — Settings
+   included — into a single trigger. Each fold's trigger keeps the folded
+   group's own chrome, so the row's color story survives the fold in both
+   themes. Level rules only hide row buttons or restyle them icon-only, or
+   let JS move whole buttons into the panels — nothing wraps, shrinks,
+   truncates or overlaps (see the no-shrink contract on .brand /
+   .header-actions). The brandless and icons levels are classes, not media
+   queries: the points where the wordmark and the labels are dropped are
+   measured like every other level, so a long language yields each piece
+   exactly when it stops fitting. */
+
+/* Each trigger exists exactly at its own reach — the classes are
+   cumulative, so "at" means its class present and the next level's absent;
+   the links trigger serves its own fold AND level 2's pair. */
+#app-header:not(.is-compact) #more-links,
+#app-header.is-minimum #more-links,
+#app-header:not(.is-overflow) #more-actions,
+#app-header.is-minimum #more-actions,
+#app-header:not(.is-minimum) #more-all { display: none; }
+
+/* The child combinator scopes the hides to the ROW: the same nodes, once
+   panelled, are the panel's content and must render there. */
+#app-header.is-compact > .header-actions > #btn-github,
+#app-header.is-compact > .header-actions > #btn-support,
+#app-header.is-overflow > .header-actions > #btn-export,
+#app-header.is-overflow > .header-actions > #btn-auto-segments,
+#app-header.is-overflow > .header-actions > #btn-open,
+#app-header.is-minimum > .header-actions > #btn-settings { display: none; }
+
+/* Level 1 — brandless: the wordmark yields before any control does. Hiding
+   the name is a level action, not a shrink — .brand keeps its flex: none
+   contract and the logo mark stays. */
+#app-header.is-brandless .brand-name { display: none; }
+
+/* Level 2 — icons: the three primary actions keep their hit boxes but lose
+   their labels, and the GitHub + Support links go mark-only squares in BOTH
+   data states (the is-loaded squares below are the same faces). Scoped to
+   the row: a button this level later folds into a panel is outside
+   #app-header, so it renders there as a full text row again. The
+   #app-header prefix is what lets the mark/lockup rules beat the theme ×
+   state rules further up, whatever order the two blocks end up in. */
+#app-header.is-icons .header-actions .btn-primary span:not(.btn-icon-slot),
+#app-header.is-icons .header-actions #btn-support span:not(.btn-icon-slot) { display: none; }
+
+#app-header.is-icons .header-actions .btn-primary { padding-inline: 10px; }
+
+#app-header.is-icons .header-actions #btn-github,
+#app-header.is-icons .header-actions #btn-support {
+  width: 32px; padding: 0; justify-content: center;
+}
+
+html[data-theme="light"] #app-header.is-icons #btn-github .gh-lockup.gh-light,
+html[data-theme="dark"] #app-header.is-icons #btn-github .gh-lockup.gh-dark { display: none; }
+
+html[data-theme="light"] #app-header.is-icons #btn-github .gh-mark.gh-light,
+html[data-theme="dark"] #app-header.is-icons #btn-github .gh-mark.gh-dark { display: block; }
+
+/* Level 6 — emergency: the route-source notice square is the last furniture
+   to go. Its warning lives on inside the chip's compact popover (built in
+   ui/fileChip.js when this class is present), wearing the same alarm red. */
+#app-header.is-emergency > #route-note { display: none; }
+
+.header-more { position: relative; display: inline-flex; flex: none; }
+.header-more[hidden],
+.header-more-panel[hidden] { display: none; }
+
+/* The panels (#header-panels, body level — see index.html): fixed bottom
+   sheets at every width, the app's narrow-screen menu idiom applied
+   unconditionally because the triggers only exist in compressed states.
+   One shared backdrop (js/ui/headerFit.js) sits under them; the z pair is
+   the menus' own. */
+.header-more-panel {
+  position: fixed;
+  inset-inline: 0;
+  inset-block: auto 0;
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  padding-block-end: calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+  box-shadow: var(--shadow-2);
+}
+
+/* Panel rows are the REAL buttons restyled into menu rows: full width,
+   label always visible — whatever level folded them and whatever the phone
+   block below says — with the button's own icon leading. The rules here
+   come after the is-loaded rules on purpose (the tie on #btn-support is
+   order-decided); the two-id GitHub rules outrank the theme × state rules
+   whatever order the blocks land in. */
+#header-panels .header-more-panel .btn {
+  width: 100%;
+  justify-content: flex-start;
+  height: auto;
+  min-height: 36px;
+  border: 0;
+  border-radius: var(--radius-s);
+  padding: 7px 10px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 13.5px;
+  gap: 9px;
+  white-space: normal;
+  /* a folded .btn-primary must not brighten its (now transparent) row */
+  filter: none;
+  /* menu rows, not inline text links — the folded anchors (GitHub) must not
+     grow the browser's default underline the row face never shows */
+  text-decoration: none;
+}
+#header-panels .header-more-panel .btn:hover:not(:disabled),
+#header-panels .header-more-panel .btn:focus-visible { background: var(--surface-hover); }
+
+/* panel rows always read as text … */
+#header-panels .header-more-panel .btn span:not(.btn-icon-slot) { display: inline; }
+/* … the settings row's label among them: its span is .visually-hidden for
+   the row's icon-only face. */
+#header-panels .header-more-panel .btn .visually-hidden {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* The Support row keeps the link's Ko-fi pink (icon and label — the color
+   token is identical in both themes). Declared after the row rule so it
+   wins the tie. */
+#header-panels .header-more-panel #btn-support { color: var(--support-pink); }
+
+/* The GitHub row reads as the bare mark + the word "GitHub" — the lockup
+   would double the label. */
+#header-panels .header-more-panel #btn-github .gh-label { display: inline; }
+
+/* The mark wears the Lucide icon box: 16px wide, matching .btn-icon-slot
+   .icon, so the label's left edge lands where every other row's text starts
+   and the glyph rides the midline the other rows' icons share. The 13.5px
+   ink is untouched — the SVG letterboxes it centered inside the wider box. */
+#header-panels .header-more-panel #btn-github .gh-mark { width: 16px; }
+
+html[data-theme="light"] #header-panels .header-more-panel #btn-github .gh-lockup,
+html[data-theme="dark"] #header-panels .header-more-panel #btn-github .gh-lockup { display: none; }
+
+html[data-theme="light"] #header-panels .header-more-panel #btn-github .gh-mark.gh-light,
+html[data-theme="dark"] #header-panels .header-more-panel #btn-github .gh-mark.gh-dark { display: block; }
+
+/* Settings drawer trigger — the single entry point for map / theme /
+   language / units on every viewport. */
+
+/* Workspace ---------------------------------------------------------------- */
+
+#workspace {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  /* Widescreen proportions, nav bar excluded: map : info = 7 : 3 across,
+     top row : profile = 2 : 1 down. Narrow screens redefine these below.
+     minmax(0, Nfr), not bare Nfr: a bare fr track carries an auto minimum,
+     so the nowrap profile toolbar would inflate its column to its own
+     min-content width and never see a narrower container — the measured
+     level controller needs the pane to actually track the window. */
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  grid-template-rows: 2fr 1fr;
+  grid-template-areas:
+    "map metrics"
+    "profile profile";
+}
+
+#map-pane {
+  grid-area: map;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-muted);
+}
+
+#map-fit {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-end: 12px;
+  z-index: var(--z-map-controls);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#metrics-pane {
+  grid-area: metrics;
+  background: var(--surface);
+  border-inline-start: 1px solid var(--border);
+  overflow-y: auto;
+  /* Keep the 7 : 3 column split honest — metric rows must not inflate the
+     track's min-content size. */
+  min-width: 0;
+  min-height: 0;
+}
+
+#profile-pane {
+  grid-area: profile;
+  background: var(--surface);
+  border-block-start: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Pins the pane to its grid track. The nowrap toolbar's min-content width
+     must never become the pane's floor — an item's automatic minimum size can
+     make that happen (the pre-rework header already measured 270 px wide
+     inside a 240 px viewport), and the level controller would then measure a
+     container wider than the one the user sees. Measured: with this pin the
+     too-wide row overflows inside the head and the pane tracks the viewport. */
+  min-width: 0;
+}
+
+.profile-head {
+  flex: none;
+  display: flex;
+  /* One line, always: the level controller (refreshControlsFit) measures this
+     row and escalates full → compact → overflow → emergency → minimum rather
+     than letting anything wrap. nowrap + flex-shrink: 0 on the children keep
+     the row at its natural width — it can neither wrap nor squeeze, so a row
+     that does not fit overflows to the right and the controller can see it. */
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  position: relative;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 8px 14px 2px;
+  /* Reserve the loaded row's height: the control row revealed on track load
+     is 30px tall (28px buttons + the group's 1px top/bottom borders), so
+     without this floor the icon+title row is 26px pre-track and the header
+     visibly jumps the moment a track parses. No level makes the row shorter
+     than 30px — the controls keep their 30px boxes at every level. */
+  min-height: 40px;
+  color: var(--foreground-muted);
+}
+
+.profile-head > * { flex-shrink: 0; }
+
+.profile-head h2 {
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--foreground-muted);
+}
+
+.profile-head-icon { display: inline-flex; }
+.profile-head-icon .icon { width: 14px; height: 14px; }
+
+.profile-note {
+  margin-inline-start: 10px;
+  font-size: 12px;
+  color: var(--foreground-faint);
+}
+
+/* X-axis mode + overlay controls (top-right of the chart header). */
+
+.profile-controls {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.xmode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  /* No overflow:hidden to clip the child buttons: that would clip their
+     focus rings and the coarse-pointer hit-area extension too — the end
+     buttons round their own outer corners to meet the group's radius. */
+}
+
+.xmode-btn:first-child {
+  border-start-start-radius: var(--radius-m);
+  border-end-start-radius: var(--radius-m);
+}
+
+.xmode-btn:last-child {
+  border-start-end-radius: var(--radius-m);
+  border-end-end-radius: var(--radius-m);
+}
+
+.xmode-btn {
+  min-height: 28px;
+  padding: 3px 12px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--foreground-muted);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.xmode-btn + .xmode-btn { border-inline-start: 1px solid var(--border); }
+
+.xmode-btn:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--surface-hover); }
+
+.xmode-btn[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 650;
+}
+
+.xmode-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Coarse-pointer hit-area extension: the 28px segmented buttons gain 8px
+   vertically (no vertical borders, so no compensation is needed) and 6px
+   horizontally (1px of it covering the divider border) of transparent
+   margin to ≥44px, visually unchanged. Hit-testing favors the topmost
+   painter — a later sibling's own box beats an earlier sibling's extension
+   — so each button keeps its own box and the extensions only cover seams
+   outside the group. */
+@media (hover: none) and (pointer: coarse) {
+  .xmode-btn { position: relative; }
+  .xmode-btn::after { content: ""; position: absolute; inset: -8px -6px; }
+}
+
+/* Wide layout: Distance/Time read as text — their icons belong to the
+   measured compact level (see refreshControlsFit). The Overlays, dual-variable
+   analysis, waypoint-snap and fit-to-sector controls read as text too, with a
+   border matching the Distance/Time group. */
+.xmode-btn .btn-icon-slot,
+#btn-waypoint-snap .btn-icon-slot,
+#btn-overlays .btn-icon-slot,
+#btn-dual-variable .btn-icon-slot,
+#btn-profile-fit-sector .btn-icon-slot { display: none; }
+
+/* Overlays, dual-variable analysis, the waypoint snap toggle, the
+   fit-to-sector command and the overflow trigger all wear the Distance/Time
+   group's box: the same border colour and radius, and the group's outer
+   height — the group's own 1px border top and bottom around a 28px button
+   makes it 30px tall, so the 28px `.btn-small` default would leave them 1px
+   short on each edge. */
+#btn-overlays,
+#btn-dual-variable,
+#btn-waypoint-snap,
+#btn-profile-fit-sector,
+#btn-more-controls {
+  border-color: var(--border);
+  border-radius: var(--radius-m);
+  height: 30px;
+}
+
+/* The overflow trigger is square: it only ever carries the ellipsis icon. */
+#btn-more-controls { width: 30px; padding: 0; justify-content: center; }
+
+/* Four measured levels, no px constants and no viewport queries — see
+   refreshControlsFit (profile-interaction.js): the controller applies the
+   first level whose row fits the header's actual width and escalates
+
+     full → is-compact → is-overflow → is-emergency → is-minimum
+
+   through the real layout. The classes layer (is-minimum implies emergency
+   implies overflow implies compact), so each level below adds rules to the
+   ones above rather than restating them. Level rules only ever swap text for
+   icons or let JS move whole buttons into the overflow panel — nothing wraps,
+   shrinks, truncates or overlaps at any level (profile-head is nowrap
+   above). */
+
+/* Level 2 — compact: the action buttons go icon-only (accessible names live
+   on via data-i18n-aria). Distance/Time stays textual — the core axis control
+   keeps its segment labels until the emergency level (the spec's priority 1:
+   the x axis switch must stay recognizable, not become two bare icons). */
+#profile-pane.is-compact #btn-waypoint-snap span:not(.btn-icon-slot),
+#profile-pane.is-compact #btn-overlays span:not(.btn-icon-slot),
+#profile-pane.is-compact #btn-dual-variable span:not(.btn-icon-slot),
+#profile-pane.is-compact #btn-profile-fit-sector span:not(.btn-icon-slot) { display: none; }
+#profile-pane.is-compact #btn-waypoint-snap .btn-icon-slot,
+#profile-pane.is-compact #btn-overlays .btn-icon-slot,
+#profile-pane.is-compact #btn-dual-variable .btn-icon-slot,
+#profile-pane.is-compact #btn-profile-fit-sector .btn-icon-slot { display: inline-flex; }
+
+/* Level 4 — emergency: identity text folds into the icon (the visually
+   hidden h2 keeps the heading for assistive tech), the axis toggle drops to
+   its icon variant, and gaps tighten. The minimum level inherits all of it
+   and only sends the remaining row controls into the panel. */
+#profile-pane.is-emergency .profile-head h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+#profile-pane.is-emergency .profile-head { gap: 4px; }
+#profile-pane.is-emergency .xmode-btn { padding: 3px 8px; }
+#profile-pane.is-emergency .xmode-btn span:not(.btn-icon-slot) { display: none; }
+#profile-pane.is-emergency .xmode-btn .btn-icon-slot { display: inline-flex; }
+
+/* The overflow panel hosts the REAL buttons the controller moved out of the
+   row — same nodes, listeners, aria and state, presented as menu rows. These
+   overrides come after the level rules on purpose: a button inside the panel
+   always shows its text label, whatever level the pane is in. */
+.profile-overflow { position: relative; }
+.profile-overflow-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-2);
+  /* The panel is the only route to the moved controls at the minimum level, so
+     it must stay on screen at any viewport width: capped to the viewport, and
+     a long label wraps to a second line instead of being clipped. The 28px is
+     the head's own 14px padding on each side, which the panel sits inside. */
+  min-width: min(210px, calc(100vw - 28px));
+  max-width: calc(100vw - 28px);
+  white-space: normal;
+}
+#profile-pane #profile-overflow-panel .btn,
+#profile-pane #profile-overflow-panel .xmode-toggle {
+  width: 100%;
+  justify-content: flex-start;
+  height: auto;
+  min-height: 30px;
+  border: 0;
+  border-radius: var(--radius-s);
+  padding: 4px 10px;
+  background: transparent;
+  /* .btn is nowrap (buttons.css) and the head above is nowrap too: a row may
+     wrap its label only when the viewport is too narrow to show it whole. */
+  white-space: normal;
+}
+#profile-pane #profile-overflow-panel .btn:hover,
+#profile-pane #profile-overflow-panel .xmode-btn:hover {
+  background: var(--surface-hover);
+}
+/* panel rows always read as text … */
+#profile-pane #profile-overflow-panel .btn span:not(.btn-icon-slot),
+#profile-pane #profile-overflow-panel .xmode-btn span:not(.btn-icon-slot) { display: inline; }
+/* … with the row's icon variant (each button's aria carries the name). */
+#profile-pane #profile-overflow-panel .btn .btn-icon-slot,
+#profile-pane #profile-overflow-panel .xmode-btn .btn-icon-slot { display: none; }
+/* the stacked Distance/Time group loses its joined-segment chrome */
+#profile-pane #profile-overflow-panel .xmode-toggle { flex-direction: column; gap: 2px; }
+#profile-pane #profile-overflow-panel .xmode-btn + .xmode-btn { border-inline-start: 0; }
+#profile-pane #profile-overflow-panel .xmode-btn[aria-pressed="true"] {
+  background: var(--accent-soft);
+}
+
+/* Tablet / mobile ---------------------------------------------------------- */
+
+@media (max-width: 1099px) {
+  /* One long scrolling page: map → elevation chart → sector summary →
+     Elevation / Gradient / Time data groups. The header stays pinned on top
+     (#app is a flex column; only the workspace scrolls). */
+  #workspace {
+    grid-template-columns: minmax(0, 1fr);
+    /* The map row is the same height with and without a track: the empty
+       page shows 44vh (grid free space is positive), but a plain
+       minmax(304px, 44vh) drops to its 304px floor once a track loads — the
+       metrics row's content (~1650px) pushes the base sizes past the
+       viewport, free space goes negative and the 44vh growth limit is never
+       reached. max() pins the track at the height the empty page already
+       showed. The 304px term is the short-viewport floor and must hold the
+       full right-edge control stack without overlap — the 12px-inset
+       #map-fit column (4 × 34px buttons + 3 × 8px gaps = 160px) above
+       MapLibre's zoom pair with the compact attribution (i) stacked below
+       it (66px group + 8px gap + 24px circle + 10px block inset = 108px)
+       needs ≥280px; it keeps ~24px of live map between them and matches
+       the touch profile module's height. */
+    grid-template-rows: max(304px, 44vh) min-content auto;
+    /* The profile row is min-content, not auto, on purpose: align-content's
+       stretch splits the leftover space EQUALLY among auto rows, and the
+       fixed-height profile pane would not grow with its stretched row — the
+       unpainted remainder showed as a strip of body --background between the
+       profile module and the metrics pane (thicker on taller viewports). A
+       min-content row tracks the pane's own 240/304px height (single source)
+       and is not stretchable, so the metrics row absorbs all the slack with
+       its surface paint and the two modules stay flush. */
+    grid-template-areas:
+      "map"
+      "profile"
+      "metrics";
+    overflow-y: auto;
+  }
+
+  #metrics-pane {
+    border-inline-start: none;
+    border-block-start: 1px solid var(--border);
+    overflow: visible;
+    /* The desktop rail's min-height: 0 must not survive here: #workspace has a
+       definite height (flex in #app), so with the item's content minimum
+       disabled this auto row collapses to the space left over after map +
+       profile. The pane's box then ends mid-content and, with overflow now
+       visible, the remaining rows paint over the body's --background instead
+       of the pane's --surface — the white→gray split down the panel. */
+    min-height: auto;
+  }
+
+  #profile-pane {
+    height: 240px;
+    border-block-start: 1px solid var(--border);
+  }
+
+  /* Every data group is a distinct module on the long page. */
+  .metrics-root .metric-groups { margin-block-start: 8px; }
+  .metrics-root .metric-group {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 10px 12px 12px;
+    margin-block-end: 12px;
+  }
+  .metrics-root .metric-group:last-child { margin-block-end: 4px; }
+}
+
+/* Touch devices (phones/tablets) also reserve the fixed probe-readout band
+   between the profile header and the chart (.profile-readout in
+   profile.css) — 64px since the
+   heart-rate slot grew a second line (the zone label); growing the module
+   by the band keeps the plot itself at its usual ~200px instead of
+   shrinking it. Mice keep 240px — they have no readout band. */
+@media (max-width: 1099px) and (hover: none) and (pointer: coarse) {
+  #profile-pane { height: 304px; }
+}
+
+/* Nothing about the header is keyed to a width or a pointer here — the old
+   720 px / coarse-pointer media query is gone, its tighter phone padding
+   and gaps included: a constant-geometry row is what the measured walk
+   needs (a density jump at 720 px shoved the brand icon, file chip and
+   route-note square sideways with no change in fit), and hiding the app
+   name, iconifying the three primary actions and squaring the GitHub +
+   Support links are the measured is-brandless / is-icons levels of the
+   compression walk (js/ui/headerFit.js), so a long language yields each
+   piece exactly when it stops fitting and a roomy landscape phone keeps
+   its labels. The file chip needs no phone rules either: its full-vs-info
+   mode is measured from the real layout (js/ui/fileChip.js), so the pill
+   degrades to the (i) button exactly when name + meta stop fitting. The
+   profile header's text-vs-icon switch is measured the same way
+   (refreshControlsFit) — no px constant anywhere in the top bar. */

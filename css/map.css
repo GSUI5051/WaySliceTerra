@@ -1,0 +1,504 @@
+/* ==========================================================================
+   MapLibre GL theming — controls, attribution and custom markers must follow
+   the application theme. Map TILES stay provider-styled on purpose; the
+   basemap choice is independent from the light/dark appearance.
+   ========================================================================== */
+
+.maplibregl-map {
+  font: inherit;
+  background: var(--surface-muted);
+}
+
+/* MapLibre's built-in cooperative-gesture banner duplicates the app's own
+   .map-gesture-hint overlay (js/map/gestures.js) — keep only the latter. */
+.maplibregl-cooperative-gesture-screen { display: none; }
+
+/* The zoom pair keeps MapLibre's single two-button group — the bordered
+   vertical column with the internal divider, unchanged in structure and
+   size. Its COLORS are not decided here: js/map/mapView.js puts the shared
+   .btn/.btn-elevated classes on the two buttons — the same component
+   classes that color the #map-fit column — so both themes always follow
+   one source. This file owns only the group's geometry and frame, plus
+   the stacking: the corner container swaps the vendor z-index 2 for
+   --z-map-controls, the level #map-fit already uses, so the two columns
+   stack identically against the map markers. The corner is one flex
+   COLUMN — the zoom pair and the compact attribution (i) stacked vertically
+   on a shared center axis, the same axis the #map-fit buttons use. MapLibre
+   PREPENDS bottom-corner controls, so the DOM order is group first and the
+   (i) lands right below it; align-items:center centers both on that axis
+   (the group is always the widest item — the expanded attribution panel is
+   absolutely positioned and out of this flow). The vendor's float stacking
+   and edge margins (10px) would fight that alignment, so the children are
+   floated off and marginless; the edge distance is this container's
+   padding, exactly the 12px end / 10px block the group carried before. */
+.maplibregl-ctrl-bottom-right {
+  z-index: var(--z-map-controls);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-block-end: 10px;
+  padding-inline-end: 12px;
+}
+
+.maplibregl-ctrl-bottom-right > .maplibregl-ctrl {
+  float: none;
+  margin: 0;
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-m) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+  /* MapLibre hard-codes the group's background white. The buttons cover it
+     except a hairline at the rounded corners, invisible in the light theme
+     and a white fleck in the dark one — read the token instead. */
+  background: var(--surface-elevated);
+}
+
+/* Hovering either button deepens the shared frame — the group-frame
+   equivalent of .btn:hover's border-color. */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group:has(button:hover) {
+  border-color: var(--border-strong) !important;
+}
+
+/* Geometry only: the frame owns the border and radius, and the buttons keep
+   the vendor 32px squares (.btn's 34px height, padding, inline-flex display
+   and per-button border do not apply inside the group). */
+.maplibregl-ctrl-group .btn {
+  display: block;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+/* The divider is the one border a button carries, so it must out-rank
+   .btn's border: 0 above. */
+.maplibregl-ctrl-group .btn + .btn {
+  border-block-start: 1px solid var(--border);
+}
+
+/* The zoom glyphs join the app's Lucide icon family (plus/minus, 24-grid,
+   2px stroke — same set the #map-fit buttons use) via a mask so they take
+   the themed `color`; MapLibre's built-in fills are hard-coded. The stroke
+   color in the data URI is inert — a mask only reads alpha. */
+.maplibregl-ctrl-zoom-in .maplibregl-ctrl-icon {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+.maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon {
+  background-image: none;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+/* MapLibre paints keyboard focus with a hard-coded blue ring — a migration
+   leftover the Leaflet anchors never had. Follow the global :focus-visible
+   outline instead (vendor `outline: none` needs the !important). The inset
+   offset keeps the ring inside the group's overflow:hidden. The compact
+   attribution's (i) button is not inside the group but wears the same
+   ring — the outline follows its round shape. */
+.maplibregl-ctrl-group button:focus,
+.maplibregl-ctrl-attrib-button:focus { box-shadow: none !important; }
+.maplibregl-ctrl-group button:focus-visible,
+.maplibregl-ctrl-attrib-button:focus-visible {
+  outline: 2px solid var(--focus) !important;
+  outline-offset: -2px;
+}
+
+/* Attribution — compact (js/map/mapView.js): the (i) circle sits below the
+   zoom pair on the shared center axis, dressed as a member of the app's
+   button family (see the button rules at the end of this section). Clicking
+   it opens the attribution as an INDEPENDENT panel to the LEFT of the (i),
+   on the button's own row: the control's box stays the collapsed 24px slot
+   (same vendor padding, so the button — still absolutely anchored to it —
+   never moves), and the content (.maplibregl-ctrl-attrib-inner) leaves the
+   flow as an absolutely positioned panel anchored 8px left of the box, its
+   BOTTOM edge flush with the button's (the button fills the box, so
+   bottom: 0 is the button's bottom); wrapped credit lines grow upward from
+   there. The panel carries the pre-compact bar chrome — translucent
+   elevated background, faint 10.5px text, muted links — with the small
+   radius on all four corners (it floats free of the map edges, unlike the
+   anchored bar). width: max-content keeps the long credit strings on one
+   line; the max-width cap makes them wrap inside the map on narrow panes
+   (56vw tracks the desktop 7/10 map column with margin to spare) without
+   the tiny 24px containing block collapsing the wrap to min-content. */
+.maplibregl-ctrl-attrib.maplibregl-compact-show {
+  background: none !important;
+  padding: 2px 24px 2px 0 !important;
+}
+
+/* The panel: the pre-compact attribution chrome on its own box. */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner {
+  position: absolute;
+  inset-inline-end: calc(100% + 8px);
+  inset-block-end: 0;
+  width: max-content;
+  max-width: min(420px, 56vw);
+  background: color-mix(in srgb, var(--surface-elevated) 86%, transparent) !important;
+  color: var(--foreground-faint) !important;
+  font-size: 10.5px !important;
+  padding: 2px 7px !important;
+  border-radius: var(--radius-s);
+}
+
+/* The vendor sizes the compact box with min-height 20px, but the app's
+   global border-box wins over the vendor's content-box (unlayered beats the
+   @layer'd vendor sheet), so the box comes out 20px tall while the 24px (i)
+   is anchored to its top — 2px off the group's centerline. 24px makes the
+   circle fill its box exactly. */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+  min-height: 24px;
+}
+
+.maplibregl-ctrl-attrib a { color: var(--foreground-muted) !important; }
+
+/* The (i) dressed as the app's buttons: the zoom group's elevated surface
+   (same token, flips with the theme) and the group's glyph color — the
+   --foreground that .btn puts on the zoom buttons — with the Lucide info
+   mark swapped in for the vendor glyph via the same mask technique as the
+   zoom glyphs (the data-URI stroke color is inert; a mask reads alpha
+   only). The glyph rides an ::after so the circle background and the icon
+   can take different colors; the button's vendor box (24px circle, spot
+   and size) is untouched. Unlayered rules beat the vendor sheet's state
+   swap (the expanded compact-show tint) in both states alike. */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib-button {
+  background-image: none;
+  background-color: var(--surface-elevated);
+  color: var(--foreground);
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+  mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
+}
+
+/* No track, no map chrome: while the state overlay is up the map area shows
+   only the state card. (state-overlay.css hides the fit column and the
+   top-left view tools under the same gate.)
+   Attribution stays — tiles render beneath it and the providers require
+   the credit. */
+#map-pane:has(#overlay-state:not([hidden])) .maplibregl-ctrl-group {
+  display: none;
+}
+
+/* Sector boundary handles ---------------------------------------------------- */
+
+.map-handle-icon { background: none; border: none; touch-action: none; }
+
+.map-handle {
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: var(--handle-color, var(--accent));
+  border: 2.5px solid var(--map-handle-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+.map-handle:active { cursor: grabbing; }
+
+/* Enlarged invisible hit area for touch. */
+.map-handle::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+}
+
+.map-handle-grip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--handle-core);
+}
+
+.map-handle-icon:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Hover dot (profile ⇄ map sync) --------------------------------------------- */
+
+/* MapLibre's vendor CSS fades every marker in and out (opacity .2s); the
+   dot mirrors the pointer and the mobile probe, so it must switch instantly
+   like Leaflet's setOpacity did — a fade leaves it semi-transparent for
+   200 ms after every hover and probe move. */
+.hover-dot-icon { background: none; border: none; pointer-events: none; transition: none; }
+
+.hover-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2.5px solid var(--map-handle-border);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Waypoints (GPX <wpt>) ------------------------------------------------------- */
+
+.map-waypoint-icon { background: none; border: none; }
+
+.map-waypoint {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--waypoint-color, var(--accent));
+  border: 2.5px solid var(--map-handle-border);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* The pinned waypoint (js/map/mapView.js adds a lucide pin glyph when the
+   profile reports the pin): the glyph OVERLAYS the circle — the circle
+   keeps its full styling — with its purple fill and its outline + needle
+   in the waypoint border color, no extra ring or shadow of its own. The
+   needle is elongated so the body clears the circle's top edge by 3px, and
+   the whole glyph is enlarged for a chunkier body. It anchors at its
+   bottom tip: the needle's round-capped tip sits at (50%, 96.15%) of the
+   20×26 box, so the translate plants that point (not the box center)
+   exactly on the 50%/50% origin — the circle's center; symmetric borders
+   keep the 50% origin on the center at any width. */
+.map-waypoint-icon.is-pinned .map-waypoint {
+  position: relative;
+}
+
+.map-waypoint-icon.is-pinned .map-waypoint svg {
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -96.1538%);
+}
+
+/* Enlarged invisible hit area for touch, so the name plate is reachable. */
+.map-waypoint::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+
+/* Name plate for named waypoints (in place of Leaflet's bindTooltip
+   direction: top, offset [0, -8]): self-drawn div above the pin, shown while
+   the pin is hovered. The form replicates Leaflet's tooltip-top — the box
+   with the V-shaped caret descending from its bottom border, the caret
+   always centered and its tip pointing at the waypoint — while the colors
+   follow the theme like every other floating surface (elevated background,
+   hairline border, themed text). */
+.map-waypoint-label {
+  display: none;
+  position: absolute;
+  inset-block-end: calc(50% + 14px);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 4px 8px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  color: var(--foreground);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  pointer-events: none;
+}
+
+.map-waypoint-icon:hover .map-waypoint-label { display: block; }
+
+/* Arrow pointing at the pin — Leaflet's tooltip-top caret geometry: a 12px
+   border box centered on the plate (left 50%, pulled back half its width),
+   its block-start border colored like the plate's background so the visible
+   triangle descends from the plate's bottom border in both themes; the
+   plate sits 14px above the pin center, which puts the tip 8px above it —
+   on the pin, like the old offset [0, -8]. */
+.map-waypoint-label::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 50%;
+  margin-inline-start: -6px;
+  border: 6px solid transparent;
+  border-block-start-color: var(--surface-elevated);
+}
+
+/* Waypoint markers are keyboard buttons (Tab + Enter/Space, js/map/mapView.js):
+   focus wears the app's focus ring like the map handles, and a named
+   waypoint's plate shows on focus exactly as on hover. */
+.map-waypoint-icon:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.map-waypoint-icon:focus-visible .map-waypoint-label { display: block; }
+
+/* A hovered (or keyboard-focused) pin rises above the sector handles so its
+   name plate paints over them — Leaflet showed the plate from tooltipPane
+   (650), above the whole marker pane (600). The plate lives inside the
+   pin's transform stacking context now, so the pin itself has to move; it
+   stays under the button columns (800). !important beats the inline
+   z-index: 300 the marker is created with. */
+.map-waypoint-icon:hover,
+.map-waypoint-icon:focus-visible {
+  z-index: 750 !important;
+}
+
+/* The handle bridge (js/map/mapView.js): a sector handle parked on a named
+   waypoint owns the pointer there — it is the drag affordance at that exact
+   spot — so it surfaces the shadowed pin's name plate itself. The pin rises
+   like on hover but turns pointer-transparent: a hoverable pin above the
+   handle would steal the pointer back and flap between the two. */
+.map-waypoint-icon.is-bridged .map-waypoint-label { display: block; }
+
+.map-waypoint-icon.is-bridged {
+  z-index: 750 !important;
+  pointer-events: none;
+}
+
+/* Map view controls (top-left of the map pane) --------------------------------
+   One vertical stack over the map: the 2D/3D action button, then the layer
+   toggles — the hybrid road-network overlay (Satellite basemaps only,
+   js/map/hybrid.js owns its disabled state) and the two terrain toggles
+   (hillshade, contour lines). All are plain .btn component buttons —
+   .btn-elevated for the raised look over tiles — matching the right-hand
+   #map-fit column so the two control stacks read as one family. js/map/
+   viewMode.js owns the mode button's label (the DESTINATION mode: "3D"
+   while flat, "2D" in terrain), main.js + js/map/terrain.js and js/map/
+   hybrid.js the toggles' pressed state. The stack hides with the rest of
+   the map chrome while the empty-state overlay is up. */
+
+#map-view-tools {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  z-index: var(--z-map-controls);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The mode label is two fixed characters in every state — the button shares
+   the stack's .btn-icon 34px square (same box as the right-hand #map-fit
+   column), so the 2D↔3D flip never resizes it; only the type treatment is
+   its own. */
+.viewmode-btn {
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+/* Terrain layer toggles — the app's shared "lit" language for pressed
+   states: the Entire-track capsule and the profile header's selected
+   Distance/Time segment (accent-soft fill + accent-strong glyph). Those sit
+   on the opaque app surface, but --accent-soft is translucent and these
+   buttons float over map tiles — so the elevated surface is painted UNDER
+   the wash (gradient layering), giving the same tint-on-panel look the
+   capsule has without the tiles showing through.
+
+   State rules (map control spec): OFF is the plain elevated button — neutral
+   background, theme-colored icon — and its hover is the shared .btn:hover
+   neutral swap with the icon color untouched. ON keeps the accent fill in
+   every state: hover and active deepen the wash (a second gradient layer,
+   ~doubling the token's alpha) and lift the shadow a step, never switching
+   to the neutral background. */
+.terrain-toggle[aria-pressed="true"] {
+  background:
+    linear-gradient(var(--accent-soft), var(--accent-soft)),
+    var(--surface-elevated);
+  color: var(--accent-strong);
+  font-weight: 650;
+}
+
+.terrain-toggle[aria-pressed="true"]:hover,
+.terrain-toggle[aria-pressed="true"]:active {
+  background:
+    linear-gradient(var(--accent-soft), var(--accent-soft)),
+    linear-gradient(var(--accent-soft), var(--accent-soft)),
+    var(--surface-elevated);
+  color: var(--accent-strong);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-2);
+}
+
+/* DEM state note (loading / unavailable) --------------------------------------
+   One pill at the top center of the map, shown while the DEM is in use — the
+   3D mesh, or the hillshade / generated contours in either view mode:
+   "loading…" retires when the DEM tiles report loaded, "unavailable" latches
+   for the rest of the 3D session after a DEM error. Content comes from the
+   language pack (js/map/terrain.js refreshNote). */
+
+.map-terrain-note {
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline: 0;
+  margin-inline: auto;
+  width: fit-content;
+  max-width: min(88%, 320px);
+  z-index: var(--z-overlay);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
+  color: var(--foreground-muted);
+  font-size: 12.5px;
+  font-weight: 550;
+  pointer-events: none;
+}
+
+.map-terrain-note[data-state="error"] {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.map-terrain-note[hidden] { display: none; }
+
+/* Cooperative-gestures hint (touch devices): one finger scrolls the page,
+   two fingers move the map. Purely informational — never blocks touches. */
+
+.map-gesture-hint {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 0;
+  margin-inline: auto;
+  transform: translateY(-50%);
+  width: fit-content;
+  max-width: min(88%, 320px);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 550;
+  pointer-events: none;
+}
+
+.map-gesture-hint[hidden] { display: none; }
+
+.map-gesture-hint .icon { width: 16px; height: 16px; color: var(--accent); flex: none; }
+
+/* 3D terrain occlusion: with terrain enabled, MapLibre raycasts every marker
+ * against its DEM (Marker → transform.isLocationOccluded) and toggles the
+ * `maplibregl-marker-covered` class on the ones the mountain hides. Hiding
+ * them entirely here — invisible, unclickable, out of the tab order — is the
+ * app's presentation of that verdict (the vendor itself only dims opacity). */
+/* MapLibre 6 marker roots carry only anchor/draggable modifier classes, no
+ * shared base class — so the rule keys on the covered class alone. */
+.maplibregl-marker-covered { display: none; }
