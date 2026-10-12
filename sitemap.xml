@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://waysliceterra.com/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -17,7 +17,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/de/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -32,7 +32,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/es/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -47,7 +47,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/fr/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -62,7 +62,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/it/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -77,7 +77,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/ja/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -92,7 +92,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/ko/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -107,7 +107,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/zh-CN/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -122,7 +122,7 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/zh-TW/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://waysliceterra.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://waysliceterra.com/"/>
@@ -137,17 +137,17 @@
   </url>
   <url>
     <loc>https://waysliceterra.com/about/story/story.html</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://waysliceterra.com/about/privacy/privacy.html</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://waysliceterra.com/about/changelog/changelog.html</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-12</lastmod>
     <priority>0.3</priority>
   </url>
 </urlset>
