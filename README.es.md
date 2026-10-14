@@ -33,6 +33,10 @@ Traza → Elegir un tramo → Analizar el tramo
 
 <p align="center"><a href="./screenshots/README.es.md">Más capturas de pantalla</a></p>
 
+## Cómo se usa
+
+Abre [https://waysliceterra.com](https://waysliceterra.com) o [ejecuta WaySlice Terra en local](#primeros-pasos) e importa tus datos de actividad.
+
 ¿Primer contacto con los términos? Empieza por la sección de [Terminología](#terminología) — todas las
 demás secciones emplean estas palabras exactamente con el sentido definido ahí.
 
@@ -171,7 +175,7 @@ en lugar de inventar valores. Si el archivo contiene ambos, gana la traza grabad
 
 ## Primeros pasos
 
-**Try it: https://wayslice.com**
+**Try it: https://waysliceterra.com**
 
 Cualquier servidor de archivos estáticos sirve. No hay nada que compilar:
 

@@ -13,7 +13,9 @@
 </p>
 
 WaySlice Terra 是一個開源、純前端的 GPX/FIT/TCX/KML/KMZ 運動資料分析器。
+
 整條軌跡的統計說明不了什麼：你想知道的是那段長爬坡花了多久、技術性下坡敢不敢放開跑、比賽最後 5 公里有沒有掉速。
+
 WaySlice Terra 讓你切出任意分段，對該分段單獨分析，像讀賽車遙測資料或航空領域的 QAR（飛航資料記錄器）資料那樣：
 
 ```text
@@ -23,6 +25,10 @@ WaySlice Terra 讓你切出任意分段，對該分段單獨分析，像讀賽�
 <p align="center"><img src="./screenshots/overview.jpg" alt="image"></p>
 
 <p align="center"><a href="./screenshots/README.zh-TW.md">更多截圖</a></p>
+
+## 使用方法
+
+點擊 [https://waysliceterra.com](https://waysliceterra.com) 或 [本機部署](#快速開始)，匯入運動記錄。
 
 第一次接觸這些詞？先讀[術語表](#術語表)，全文的術語都按那裡的定義使用。
 
@@ -105,7 +111,7 @@ FIT 的解碼由內建的 fit-parser 函式庫（MIT，`vendor/fit-parser/`）�
 
 ## 快速開始
 
-**線上試用：<https://wayslice.com>**
+**線上試用：<https://waysliceterra.com>**
 
 任何靜態檔案伺服器都可以執行，不需要建置：
 

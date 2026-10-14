@@ -17,7 +17,9 @@
 </p>
 
 WaySlice Terra はオープンソースの純フロントエンド GPX/FIT/TCX/KML/KMZ トラックアナライザーです。
+
 トラック全体の統計ではわかりません。知りたいのは、あの長い登りはどれだけかかったか、テクニカルな下りでどれだけ攻められたか、レース最後の 5 km で失速していないか。
+
 WaySlice Terra があれば、任意のセクターを切り出して、モータースポーツのテレメトリーや航空機の QAR（クイックアクセスレコーダー）データのように単独で分析できます:
 
 ```text
@@ -27,6 +29,10 @@ WaySlice Terra があれば、任意のセクターを切り出して、モー�
 <p align="center"><img src="./screenshots/overview.jpg" alt="image"></p>
 
 <p align="center"><a href="./screenshots/README.ja.md">スクリーンショットをもっと見る</a></p>
+
+## 使い方
+
+[https://waysliceterra.com](https://waysliceterra.com) を開く、または[ローカルで起動](#はじめに)して、アクティビティデータをインポートしてください。
 
 用語に不慣れな場合は、まず[用語集](#用語集)へ。本文中の用語はすべて、そこで定義した意味で使います。
 
@@ -109,7 +115,7 @@ FIT のデコードは、同梱の [fit-parser](https://github.com/jimmykane/fit
 
 ## はじめに
 
-**Try it: https://wayslice.com**
+**Try it: https://waysliceterra.com**
 
 静的ファイルサーバーがあれば動作します。ビルドは一切不要です:
 

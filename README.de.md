@@ -32,6 +32,10 @@ Track → Abschnitt wählen → Abschnitt analysieren
 
 <p align="center"><a href="./screenshots/README.de.md">Weitere Screenshots</a></p>
 
+## Anwendung
+
+Öffne [https://waysliceterra.com](https://waysliceterra.com) oder [starte WaySlice Terra lokal](#erste-schritte) und importiere deine Aktivitätsdaten.
+
 Neu bei diesen Begriffen? Starte mit dem Kapitel [Terminologie](#terminologie) — alle übrigen Kapitel
 benutzen diese Wörter genau so, wie sie dort definiert sind.
 
@@ -173,7 +177,7 @@ Track und die Route wird ignoriert.
 
 ## Erste Schritte
 
-**Try it: https://wayslice.com**
+**Try it: https://waysliceterra.com**
 
 Jeder statische Dateiserver taugt. Es gibt nichts zu bauen:
 

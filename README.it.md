@@ -32,6 +32,10 @@ Traccia → Scegli un tratto → Analizza il tratto
 
 <p align="center"><a href="./screenshots/README.it.md">Altri screenshot</a></p>
 
+## Come si usa
+
+Apri [https://waysliceterra.com](https://waysliceterra.com) oppure [esegui WaySlice Terra in locale](#per-iniziare) e importa i dati della tua attività.
+
 Prima volta con questi termini? Parti dalla sezione [Terminologia](#terminologia) — tutte le altre
 sezioni usano queste parole esattamente con il significato definito lì.
 
@@ -171,7 +175,7 @@ Se il file contiene entrambi, vince la traccia registrata e la route viene ignor
 
 ## Per iniziare
 
-**Try it: https://wayslice.com**
+**Try it: https://waysliceterra.com**
 
 Va bene qualsiasi server di file statici. Non c'è nulla da compilare:
 

@@ -33,6 +33,10 @@ Trace → Choisir un secteur → Analyser le secteur
 
 <p align="center"><a href="./screenshots/README.fr.md">Plus de captures d’écran</a></p>
 
+## Utilisation
+
+Ouvrez [https://waysliceterra.com](https://waysliceterra.com) ou [déployez WaySlice Terra en local](#prise-en-main), puis importez vos données d'activité.
+
 Nouveau sur le vocabulaire ? Commencez par la section [Terminologie](#terminologie) — toutes les
 autres sections emploient ces mots exactement au sens défini ici.
 
@@ -171,7 +175,7 @@ deux, la trace enregistrée l’emporte et la route est ignorée.
 
 ## Prise en main
 
-**Try it: https://wayslice.com**
+**Try it: https://waysliceterra.com**
 
 N'importe quel serveur de fichiers statiques convient. Il n'y a rien à construire :
 
