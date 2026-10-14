@@ -17,6 +17,13 @@ export const CHANGELOG_EN = {
   lede: 'What changed in the analyzer, day by day.',
   sections: [
     {
+      h: '2026-10-14',
+      ps: [
+        'Some watches record running and hiking cadence as single-leg cycles, so the raw number is half the real step rate. WaySlice now reads the step-length and speed data inside each file to tell how that file counts cadence. It shows the converted value in steps per minute. Files without the data to tell keep the raw values, and a notice in the header says so. On the narrowest screens the notice folds into the file chip popover.',
+        'Converted cadence is labeled as step cadence in steps per minute. The exported track file carries the converted values too, matching what the page shows.',
+      ],
+    },
+    {
       h: '2026-10-11',
       ps: [
         'Redesigned the responsive collapse points of the top bar.',

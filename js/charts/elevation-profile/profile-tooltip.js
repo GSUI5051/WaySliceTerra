@@ -34,7 +34,7 @@ import { t } from '../../language/language.js';
 import { formatDuration, formatDistanceShort, formatElevation, formatGrade, escapeHtml } from '../../utils/format.js';
 import { gradeReadingAt } from '../../metrics/sectorMetrics.js';
 import { state } from './profile-state.js';
-import { OVERLAY_METRICS, SPEED_FAMILY, distToX, formatOverlayValue } from './profile-data.js';
+import { OVERLAY_METRICS, SPEED_FAMILY, distToX, formatOverlayValue, cadenceAt } from './profile-data.js';
 
 /** True when the fixed telemetry band is rendered (coarse-pointer media). */
 function probeBandVisible() {
@@ -139,7 +139,7 @@ function renderProbeBand(pt, xText) {
     gradeSlot,
     speedSlot,
     sensor('hr', track.points[idx].hr, track.hasHr, hrSub),
-    sensor('cad', track.points[idx].cad, track.hasCad),
+    sensor('cad', cadenceAt(track, track.points[idx]), track.hasCad),
     sensor('temp', track.points[idx].temp, track.hasTemp),
     sensor('power', track.points[idx].power, track.hasPower),
   ].join('');
@@ -222,7 +222,7 @@ export function showTooltipAt(dist, xv = null, name = null, opts = null) {
     const def = defs.get(id);
     let v = null;
     if (id === 'hr') v = track.points[idx].hr;
-    else if (id === 'cad') v = track.points[idx].cad;
+    else if (id === 'cad') v = cadenceAt(track, track.points[idx]);
     else if (id === 'temp') v = track.points[idx].temp;
     else if (id === 'power') v = track.points[idx].power;
     else if ((id === 'speed' || id === 'pace') && speeds) v = speeds[idx];

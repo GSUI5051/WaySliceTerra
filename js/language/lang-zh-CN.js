@@ -55,6 +55,7 @@ const lang_zhCN = {
   unitFth: '英尺/小时',
   unitBpm: '次/分',
   unitRpm: '次/分',
+  unitSpm: '步/分',
   unitW: '瓦',
   system: '跟随系统',
   light: '浅色',
@@ -217,6 +218,11 @@ const lang_zhCN = {
   cadence: '踏频',
   avgCadence: '平均踏频',
   maxCadence: '最大踏频',
+  // Labels for files whose cadence field is the single-leg cycle rate (×2
+  // converted) — steps per minute, not crank rpm. English keeps Cadence.
+  cadenceStep: '步频',
+  avgCadenceStep: '平均步频',
+  maxCadenceStep: '最大步频',
   avgPower: '平均功率',
   maxPower: '最大功率',
   avgTemp: '平均温度',
@@ -231,6 +237,8 @@ const lang_zhCN = {
   noElevationData: '无海拔数据',
   noTimestampData: '无时间数据',
   routeSourceNote: '此 GPX 使用路线点而非轨迹记录，时间、心率等活动数据不可用。',
+  cadenceConventionNote: '本文件的步频字段为单脚口径，已按 ×2 换算为步/分。',
+  cadenceConventionUnknown: '本文件缺少步长数据，无法判定步频口径，按设备原始值显示。',
 
   // Heart Rate Zones
   hrZones: '心率区间',

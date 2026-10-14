@@ -55,6 +55,7 @@ const lang_zhTW = {
   unitFth: '英尺/小時',
   unitBpm: '次/分',
   unitRpm: '次/分',
+  unitSpm: '步/分',
   unitW: '瓦',
   system: '跟隨系統',
   light: '淺色',
@@ -217,6 +218,11 @@ const lang_zhTW = {
   cadence: '踏頻',
   avgCadence: '平均踏頻',
   maxCadence: '最大踏頻',
+  // Labels for files whose cadence field is the single-leg cycle rate (×2
+  // converted) — steps per minute, not crank rpm. English keeps Cadence.
+  cadenceStep: '步頻',
+  avgCadenceStep: '平均步頻',
+  maxCadenceStep: '最大步頻',
   avgPower: '平均功率',
   maxPower: '最大功率',
   avgTemp: '平均溫度',
@@ -231,6 +237,8 @@ const lang_zhTW = {
   noElevationData: '無海拔資料',
   noTimestampData: '無時間資料',
   routeSourceNote: '此 GPX 使用路線點而非軌跡記錄，時間、心率等活動資料無法使用。',
+  cadenceConventionNote: '本檔案的步頻欄位為單腳口徑，已按 ×2 換算為步/分。',
+  cadenceConventionUnknown: '本檔案缺少步長資料，無法判定步頻口徑，按裝置原始值顯示。',
 
   // Heart Rate Zones
   hrZones: '心率區間',

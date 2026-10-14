@@ -17,9 +17,10 @@
  *              second trigger wearing the group's primary chrome;
  *   minimum    everything — Settings included — folds into a single
  *              all-actions trigger;
- *   emergency  the route-source notice square folds away too: the warning
- *              lives on inside the chip's compact popover (ui/fileChip.js),
- *              the last visible furniture past the single trigger.
+ *   emergency  the route-source and cadence notice squares fold away too:
+ *              their sentences live on inside the chip's compact popover
+ *              (ui/fileChip.js), the last visible furniture past the single
+ *              trigger.
  *
  * The first compression is none of these folds: the file chip re-decides
  * its full-vs-info mode inside the walk, so the track name always yields
