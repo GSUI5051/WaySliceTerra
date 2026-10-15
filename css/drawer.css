@@ -192,3 +192,55 @@
   font-size: 11.5px;
   color: var(--foreground-faint);
 }
+
+/* Track Elevation section (drawer): the correction rows reuse the .menu-item
+   anatomy with a two-line text column (title + per-row explainer), and the
+   state feedback sits between intro and rows as quiet notes. All colors ride
+   the theme tokens — success/warn only mark results, never decorate. */
+.ele-fix { display: flex; flex-direction: column; }
+
+.menu-item-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+
+.menu-item-desc {
+  font-size: 11.5px;
+  color: var(--foreground-faint);
+}
+
+/* The cancel row during a run: same anatomy, quieter voice than the action
+   rows above it. */
+.menu-item-ghost .menu-item-label { color: var(--foreground-muted); }
+
+.ele-note {
+  padding: 4px 10px 0;
+  font-size: 11.5px;
+  color: var(--foreground-muted);
+}
+
+.ele-note.ele-status { color: var(--foreground-muted); }
+.ele-note.ele-ok { color: var(--success); }
+.ele-note.ele-warn { color: var(--danger); }
+
+.ele-note.ele-privacy { color: var(--foreground-faint); }
+
+/* Confirm/cancel pairs under the replace warning: stretched, label centered
+   on the button face (.btn is a flex row — justify-content centers it). */
+.ele-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px 2px;
+}
+
+.ele-actions .btn {
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.ele-note.ele-attrib { color: var(--foreground-faint); }
+.ele-note.ele-attrib a { color: var(--foreground-muted); }

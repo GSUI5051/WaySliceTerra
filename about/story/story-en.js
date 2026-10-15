@@ -92,6 +92,7 @@ export const STORY_EN = {
         'The analyzer itself needs no server, nothing needs to be uploaded, and there is no need to collect user data.',
         'Everything happens in your own browser: File → Browser → Parse → Analyze → Render. All settings live in your own browser too.',
         'The only network-dependent feature is loading map tiles from the map providers\' servers.',
+        'The Track Elevation corrections in Settings use the same DEM: they request the tiles that cover the track\'s own area, so the tile server learns the region — and the track file itself never leaves the browser.',
       ],
     },
     {

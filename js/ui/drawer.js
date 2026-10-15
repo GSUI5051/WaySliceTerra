@@ -33,6 +33,7 @@ import {
 } from '../metrics/heartRateDisplay.js';
 import { getViewMode } from '../map/viewMode.js';
 import { getTerrainSettings, updateTerrainSettings } from '../map/terrain.js';
+import { trackElevationContent } from './trackElevationSettings.js';
 import { formatDecimal } from '../utils/format.js';
 
 let dialog = null;
@@ -106,6 +107,10 @@ function renderSections() {
       renderOptionList(buildUnitItems(), (value) => { pickUnit(value); renderSections(); })),
     accordionSection('heart-rate', 'hrZones', heartRateContent),
     accordionSection('terrain', 'terrain', terrainContent),
+    // The track-elevation group sits right next to Terrain but stays a
+    // separate section: Terrain shapes the 3D ground display, this group
+    // edits the loaded track's own elevation data.
+    accordionSection('track-elevation', 'trackEle', trackElevationContent),
     accordionSection('about', 'aboutSection', aboutContent),
   );
   if (refocusValue) {

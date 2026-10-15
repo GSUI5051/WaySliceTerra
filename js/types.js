@@ -91,6 +91,13 @@
  *                                             included) — raw values display as recorded.
  * @property {number} [cadenceFactor]          Multiplier applied to cadence readings on read
  *                                             side (2 for 'single', else 1 — always stamped).
+ * @property {(number|null)[]} [eleOriginal]   Elevations exactly as loaded, captured before the
+ *                                             first DEM correction; null/absent when no
+ *                                             correction is applied (restore reads this).
+ * @property {'fill'|'replace'} [eleSource]    What the current elevations are: 'fill' = missing
+ *                                             values completed from DEM, 'replace' = every
+ *                                             elevation re-sampled from DEM; absent = the
+ *                                             file's original data.
  */
 
 /**

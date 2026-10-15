@@ -34,6 +34,9 @@
  * @property {number} tileSize   native tile pixel size (512 for Mapterhorn)
  * @property {string} attribution  provider credit, shown in the map's
  *                                  attribution control while terrain renders
+ * @property {string} attributionUrl  plain link target for text contexts that
+ *                                  credit the source outside the map (the
+ *                                  drawer's Track Elevation footer)
  */
 
 /** @type {TerrainProvider[]} */
@@ -46,6 +49,7 @@ export const TERRAIN_PROVIDERS = [
     maxZoom: 12,
     tileSize: 512,
     attribution: '<a href="https://mapterhorn.com/" target="_blank" rel="noreferrer">Mapterhorn</a>, <a href="https://spacedata.copernicus.eu/" target="_blank" rel="noreferrer">Copernicus DEM</a>',
+    attributionUrl: 'https://mapterhorn.com/',
   },
 ];
 

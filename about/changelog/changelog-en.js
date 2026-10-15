@@ -17,6 +17,13 @@ export const CHANGELOG_EN = {
   lede: 'What changed in the analyzer, day by day.',
   sections: [
     {
+      h: '2026-10-15',
+      ps: [
+        'Settings gains a "Track Elevation" group: fill the elevations a track is missing from DEM data, replace every elevation with a DEM sample, or restore the file\'s original elevations at any time; replacing asks for confirmation first.',
+        'Once a correction runs, everything that depends on elevation — the profile, elevation gain and loss, grade and 3D distance — is recomputed from the new data right away. Coordinates, timestamps and the rest of the file stay untouched.',
+      ],
+    },
+    {
       h: '2026-10-14',
       ps: [
         'Some watches record running and hiking cadence as single-leg cycles, so the raw number is half the real step rate. WaySlice now reads the step-length and speed data inside each file to tell how that file counts cadence. It shows the converted value in steps per minute. Files without the data to tell keep the raw values, and a notice in the header says so. On the narrowest screens the notice folds into the file chip popover.',
@@ -116,7 +123,7 @@ export const CHANGELOG_EN = {
     {
       h: '2026-10-01',
       ps: [
-        'Rebuilt the settings drawer. Each settings group now expands and collapses on its own.',
+        'Rebuilt Settings. Each settings group now expands and collapses on its own.',
         'Added a Fit to sector button.',
         'Reworked how the elevation profile toolbar displays.',
       ],

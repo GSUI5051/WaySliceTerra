@@ -30,7 +30,7 @@ export const PRIVACY_ZH_CN = {
     {
       h: '需要联网的功能',
       ps: [
-        '唯一需要联网的功能是地图。底图瓦片来自各地图供应商的服务器：OpenStreetMap、OpenTopoMap、CyclOSM、OpenFreeMap、EOX 与 Esri；高程（DEM）瓦片来自 Mapterhorn（Copernicus DEM 数据）——免 API key、免注册——山体阴影由你的浏览器根据该 DEM 本地计算。打开等高线开关时，等高线由你的浏览器从同一份 DEM 实时生成（使用内置的 maplibre-contour 库，不请求任何等高线服务）。等高线上高程标签的字体文件来自 OpenFreeMap。在卫星底图上打开路网叠加层时，其中四类较小的自然地标点（洞穴入口、泉、岩石、石块）从公共 Overpass API（z.overpass-api.de / lz4.overpass-api.de / overpass.osm.rambler.ru / overpass.private.coffee / maps.mail.ru）获取——该查询包含当前地图视野的边界框；山峰、鞍部与火山来自前述 OpenFreeMap 瓦片。',
+        '唯一需要联网的功能是地图。底图瓦片来自各地图供应商的服务器：OpenStreetMap、OpenTopoMap、CyclOSM、OpenFreeMap、EOX 与 Esri；高程（DEM）瓦片来自 Mapterhorn（Copernicus DEM 数据）——免 API key、免注册——山体阴影由你的浏览器根据该 DEM 本地计算。打开等高线开关时，等高线由你的浏览器从同一份 DEM 实时生成（使用内置的 maplibre-contour 库，不请求任何等高线服务）。等高线上高程标签的字体文件来自 OpenFreeMap。在卫星底图上打开路网叠加层时，其中四类较小的自然地标点（洞穴入口、泉、岩石、石块）从公共 Overpass API（z.overpass-api.de / lz4.overpass-api.de / overpass.osm.rambler.ru / overpass.private.coffee / maps.mail.ru）获取——该查询包含当前地图视野的边界框；山峰、鞍部与火山来自前述 OpenFreeMap 瓦片。设置里的「轨迹海拔」也使用同一份 Mapterhorn DEM：修正轨迹海拔时会请求覆盖轨迹所在区域的 DEM 瓦片——同样只有瓦片请求，轨迹文件本身不会离开你的浏览器。',
         '只有加载地图需要联网，就像加载网页上的图片一样。你的轨迹、你的文件与你的设置不会上传到任何服务器。',
       ],
     },

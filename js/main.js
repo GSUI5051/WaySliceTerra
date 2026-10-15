@@ -27,6 +27,7 @@ import { initExport } from './export/exporter.js';
 import { initAutoSegments } from './ui/autoSegments.js';
 import { initSheets, openDetailsSheet } from './ui/sheets.js';
 import { initDrawer } from './ui/drawer.js';
+import { initTrackElevationSettings } from './ui/trackElevationSettings.js';
 import { initHeartZonesDialog } from './ui/heartZonesDialog.js';
 import { initStoryDialog } from './ui/storyDialog.js';
 import { createMenu } from './ui/menus.js';
@@ -94,6 +95,9 @@ async function boot() {
   wireHeader();
   wireWaypoints();
   wireStores();
+  // The Track Elevation section follows the track store from boot, so its
+  // status line and restore row are current the moment the drawer opens.
+  initTrackElevationSettings();
   wireLanguage();
 }
 
@@ -254,24 +258,42 @@ function wireDetailsSheet() {
 
 /** @private Track → map/profile/chip updates. */
 function wireStores() {
+  // The last track this wiring saw. An elevation correction (settings →
+  // Track Elevation) re-publishes the SAME points array with new .ele
+  // values: the map never reads elevations and the sector selection must
+  // survive, so that case skips the fresh-track wiring (map rebuild,
+  // waypoint reset, sector reset) and only reloads the profile — whose
+  // per-track caches key on the track object identity and therefore rebuild
+  // from the new elevations. The metrics panel, dual-variable cache and
+  // exporter re-read the store on their own trackStore subscriptions.
+  let wiredTrack = null;
   trackStore.subscribe((track) => {
-    // A fresh track always starts with its waypoints shown — reset before the
-    // map rebuilds its layers so the waypoint group is created in one pass.
-    waypointsVisible = true;
-    mapSetTrack(track);
-    setProfileTrack(track);
-    // Select the whole track by default; this also triggers the first
-    // synchronized sector redraw across map, profile and metrics.
-    setTrackTotal(track.totalDistance);
+    const isElevationRepublish = wiredTrack != null
+      && track !== wiredTrack && track.points === wiredTrack.points;
+    wiredTrack = track;
+    if (!isElevationRepublish) {
+      // A fresh track always starts with its waypoints shown — reset before the
+      // map rebuilds its layers so the waypoint group is created in one pass.
+      waypointsVisible = true;
+      mapSetTrack(track);
+      setProfileTrack(track);
+      // Select the whole track by default; this also triggers the first
+      // synchronized sector redraw across map, profile and metrics.
+      setTrackTotal(track.totalDistance);
 
-    setWaypointsVisible(true);
-    const hasWaypoints = (track.waypoints || []).length > 0;
-    document.getElementById('btn-waypoints').hidden = !hasWaypoints;
-    document.getElementById('btn-waypoint-snap').hidden = !hasWaypoints;
-    refreshWaypointsButton();
+      setWaypointsVisible(true);
+      const hasWaypoints = (track.waypoints || []).length > 0;
+      document.getElementById('btn-waypoints').hidden = !hasWaypoints;
+      document.getElementById('btn-waypoint-snap').hidden = !hasWaypoints;
+      refreshWaypointsButton();
+    } else {
+      setProfileTrack(track);
+    }
 
     // "No elevation data" hint above the profile. Route sources announce
-    // themselves in the header instead (js/ui/routeNote.js).
+    // themselves in the header instead (js/ui/routeNote.js). A correction
+    // can change this flag (fill completes a missing series), so it sits
+    // outside the fresh-track branch.
     document.getElementById('profile-note').hidden = track.hasElevation;
 
     document.getElementById('file-chip').hidden = false;
